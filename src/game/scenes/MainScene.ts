@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 export default class MainScene extends Phaser.Scene {
-  private smokeParticles?: Phaser.GameObjects.Particles.ParticleEmitterManager;
+  private smokeEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
   
   constructor() {
     super({ key: 'MainScene' });
@@ -86,18 +86,21 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private createSmokeEffect(x: number, y: number) {
-    this.smokeParticles = this.add.particles('smoke');
-    
-    this.smokeParticles.createEmitter({
-      x: this.cameras.main.width * x,
-      y: this.cameras.main.height * y,
-      speed: { min: 20, max: 50 },
-      angle: { min: 230, max: 310 },
-      scale: { start: 0.1, end: 0 },
-      alpha: { start: 0.5, end: 0 },
-      lifespan: 2000,
-      frequency: 200
-    });
+    // Create a particle emitter for smoke
+    this.smokeEmitter = this.add.particles(
+      this.cameras.main.width * x,
+      this.cameras.main.height * y,
+      'smoke',
+      {
+        speed: { min: 20, max: 50 },
+        angle: { min: 230, max: 310 },
+        scale: { start: 0.1, end: 0 },
+        alpha: { start: 0.5, end: 0 },
+        lifespan: 2000,
+        frequency: 200,
+        blendMode: Phaser.BlendModes.ADD
+      }
+    );
   }
 
   private createAmbientLighting() {
