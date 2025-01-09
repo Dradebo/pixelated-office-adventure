@@ -1,30 +1,30 @@
 import Phaser from 'phaser';
 
 export default class MainScene extends Phaser.Scene {
-  private smokeEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
-  
   constructor() {
     super({ key: 'MainScene' });
   }
 
   create() {
-    // Add background
+    // Add background and scale it to fit the screen
     const bg = this.add.image(0, 0, 'office-bg');
     bg.setOrigin(0, 0);
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
-    // Add interactive elements
-    this.createInteractiveElement('character', 0.5, 0.6, 'Contact Information', this.handleCharacterClick.bind(this));
-    this.createInteractiveElement('shelf', 0.8, 0.3, 'Merchandise', this.handleShelfClick.bind(this));
-    this.createInteractiveElement('noticeboard', 0.2, 0.3, 'Press & Media', this.handleNoticeboardClick.bind(this));
-    this.createInteractiveElement('radio', 0.7, 0.7, 'Art Portfolio', this.handleRadioClick.bind(this));
-    this.createInteractiveElement('brain', 0.3, 0.7, 'Biography', this.handleBrainClick.bind(this));
+    // Create interactive elements with specific positions
+    const elements = [
+      { key: 'character', x: 0.5, y: 0.5, tooltip: 'Contact Information', link: '/contact' },
+      { key: 'shelf', x: 0.8, y: 0.3, tooltip: 'Merchandise', link: '/merchandise' },
+      { key: 'noticeboard', x: 0.2, y: 0.3, tooltip: 'Press & Media', link: '/press' },
+      { key: 'radio', x: 0.7, y: 0.7, tooltip: 'Art Portfolio', link: '/art' },
+      { key: 'brain', x: 0.3, y: 0.7, tooltip: 'Biography', link: '/bio' }
+    ];
 
-    // Add smoke effect
-    this.createSmokeEffect(0.52, 0.55);
-
-    // Add ambient lighting
-    this.createAmbientLighting();
+    elements.forEach(({ key, x, y, tooltip, link }) => {
+      this.createInteractiveElement(key, x, y, tooltip, () => {
+        window.open(link, '_blank');
+      });
+    });
   }
 
   private createInteractiveElement(
@@ -40,21 +40,29 @@ export default class MainScene extends Phaser.Scene {
       key
     );
     
+    // Set interactive properties
     element.setInteractive({ useHandCursor: true });
     
-    // Hover effects
+    // Scale the element appropriately
+    const scale = Math.min(
+      this.cameras.main.width / 1920,
+      this.cameras.main.height / 1080
+    ) * 0.5; // Adjust this multiplier as needed
+    element.setScale(scale);
+    
+    // Add hover effects
     element.on('pointerover', () => {
       this.tweens.add({
         targets: element,
-        scaleX: 1.1,
-        scaleY: 1.1,
+        scaleX: scale * 1.1,
+        scaleY: scale * 1.1,
         duration: 200,
         ease: 'Power2'
       });
       
       const tooltipText = this.add.text(
         element.x,
-        element.y - 50,
+        element.y - element.displayHeight / 2 - 20,
         tooltip,
         {
           fontSize: '24px',
@@ -70,8 +78,8 @@ export default class MainScene extends Phaser.Scene {
     element.on('pointerout', () => {
       this.tweens.add({
         targets: element,
-        scaleX: 1,
-        scaleY: 1,
+        scaleX: scale,
+        scaleY: scale,
         duration: 200,
         ease: 'Power2'
       });
@@ -83,63 +91,5 @@ export default class MainScene extends Phaser.Scene {
     });
 
     element.on('pointerdown', callback);
-  }
-
-  private createSmokeEffect(x: number, y: number) {
-    // Create a particle emitter for smoke
-    this.smokeEmitter = this.add.particles(
-      this.cameras.main.width * x,
-      this.cameras.main.height * y,
-      'smoke',
-      {
-        speed: { min: 20, max: 50 },
-        angle: { min: 230, max: 310 },
-        scale: { start: 0.1, end: 0 },
-        alpha: { start: 0.5, end: 0 },
-        lifespan: 2000,
-        frequency: 200,
-        blendMode: Phaser.BlendModes.ADD
-      }
-    );
-  }
-
-  private createAmbientLighting() {
-    // Add subtle pulsing light effect
-    const light = this.add.pointlight(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2,
-      0xffa500,
-      150,
-      0.1
-    );
-
-    this.tweens.add({
-      targets: light,
-      intensity: 0.15,
-      duration: 2000,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
-  }
-
-  private handleCharacterClick() {
-    window.open('/contact', '_blank');
-  }
-
-  private handleShelfClick() {
-    window.open('/merchandise', '_blank');
-  }
-
-  private handleNoticeboardClick() {
-    window.open('/press', '_blank');
-  }
-
-  private handleRadioClick() {
-    window.open('/art', '_blank');
-  }
-
-  private handleBrainClick() {
-    window.open('/bio', '_blank');
   }
 }
