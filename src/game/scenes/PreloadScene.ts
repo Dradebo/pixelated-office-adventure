@@ -6,10 +6,7 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    // Update image paths to match the correct location
-    this.load.setBaseURL(window.location.origin);
-    
-    // Load assets with explicit paths
+    // Load assets
     this.load.image('office-bg', '/assets/office-bg.png');
     this.load.image('character', '/assets/character.png');
     this.load.image('shelf', '/assets/shelf.png');

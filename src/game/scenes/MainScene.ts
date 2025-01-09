@@ -1,24 +1,27 @@
 import Phaser from 'phaser';
 
 export default class MainScene extends Phaser.Scene {
+  private smokeEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+  
   constructor() {
     super({ key: 'MainScene' });
   }
 
   create() {
-    // Add background with proper scaling
+    // Add background
     const bg = this.add.image(0, 0, 'office-bg');
     bg.setOrigin(0, 0);
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
-    // Add interactive elements with proper scaling
-    const scale = Math.min(this.cameras.main.width / 1920, this.cameras.main.height / 1080);
-    
-    this.createInteractiveElement('character', 0.5, 0.6, 'Contact Information', this.handleCharacterClick.bind(this), scale);
-    this.createInteractiveElement('shelf', 0.8, 0.3, 'Merchandise', this.handleShelfClick.bind(this), scale);
-    this.createInteractiveElement('noticeboard', 0.2, 0.3, 'Press & Media', this.handleNoticeboardClick.bind(this), scale);
-    this.createInteractiveElement('radio', 0.7, 0.7, 'Art Portfolio', this.handleRadioClick.bind(this), scale);
-    this.createInteractiveElement('brain', 0.3, 0.7, 'Biography', this.handleBrainClick.bind(this), scale);
+    // Add interactive elements
+    this.createInteractiveElement('character', 0.5, 0.6, 'Contact Information', this.handleCharacterClick.bind(this));
+    this.createInteractiveElement('shelf', 0.8, 0.3, 'Merchandise', this.handleShelfClick.bind(this));
+    this.createInteractiveElement('noticeboard', 0.2, 0.3, 'Press & Media', this.handleNoticeboardClick.bind(this));
+    this.createInteractiveElement('radio', 0.7, 0.7, 'Art Portfolio', this.handleRadioClick.bind(this));
+    this.createInteractiveElement('brain', 0.3, 0.7, 'Biography', this.handleBrainClick.bind(this));
+
+    // Add smoke effect
+    this.createSmokeEffect(0.52, 0.55);
 
     // Add ambient lighting
     this.createAmbientLighting();
@@ -29,8 +32,7 @@ export default class MainScene extends Phaser.Scene {
     x: number,
     y: number,
     tooltip: string,
-    callback: () => void,
-    scale: number
+    callback: () => void
   ) {
     const element = this.add.image(
       this.cameras.main.width * x,
@@ -38,15 +40,14 @@ export default class MainScene extends Phaser.Scene {
       key
     );
     
-    element.setScale(scale);
     element.setInteractive({ useHandCursor: true });
     
     // Hover effects
     element.on('pointerover', () => {
       this.tweens.add({
         targets: element,
-        scaleX: scale * 1.1,
-        scaleY: scale * 1.1,
+        scaleX: 1.1,
+        scaleY: 1.1,
         duration: 200,
         ease: 'Power2'
       });
@@ -69,8 +70,8 @@ export default class MainScene extends Phaser.Scene {
     element.on('pointerout', () => {
       this.tweens.add({
         targets: element,
-        scaleX: scale,
-        scaleY: scale,
+        scaleX: 1,
+        scaleY: 1,
         duration: 200,
         ease: 'Power2'
       });
@@ -84,7 +85,26 @@ export default class MainScene extends Phaser.Scene {
     element.on('pointerdown', callback);
   }
 
+  private createSmokeEffect(x: number, y: number) {
+    // Create a particle emitter for smoke
+    this.smokeEmitter = this.add.particles(
+      this.cameras.main.width * x,
+      this.cameras.main.height * y,
+      'smoke',
+      {
+        speed: { min: 20, max: 50 },
+        angle: { min: 230, max: 310 },
+        scale: { start: 0.1, end: 0 },
+        alpha: { start: 0.5, end: 0 },
+        lifespan: 2000,
+        frequency: 200,
+        blendMode: Phaser.BlendModes.ADD
+      }
+    );
+  }
+
   private createAmbientLighting() {
+    // Add subtle pulsing light effect
     const light = this.add.pointlight(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
