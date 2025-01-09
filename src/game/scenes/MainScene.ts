@@ -1,8 +1,6 @@
 import Phaser from 'phaser';
 
 export default class MainScene extends Phaser.Scene {
-  private smokeEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
-  
   constructor() {
     super({ key: 'MainScene' });
   }
@@ -21,9 +19,6 @@ export default class MainScene extends Phaser.Scene {
     this.createInteractiveElement('noticeboard', 0.2, 0.3, 'Press & Media', this.handleNoticeboardClick.bind(this), scale);
     this.createInteractiveElement('radio', 0.7, 0.7, 'Art Portfolio', this.handleRadioClick.bind(this), scale);
     this.createInteractiveElement('brain', 0.3, 0.7, 'Biography', this.handleBrainClick.bind(this), scale);
-
-    // Add smoke effect
-    this.createSmokeEffect(0.52, 0.55);
 
     // Add ambient lighting
     this.createAmbientLighting();
@@ -87,23 +82,6 @@ export default class MainScene extends Phaser.Scene {
     });
 
     element.on('pointerdown', callback);
-  }
-
-  private createSmokeEffect(x: number, y: number) {
-    this.smokeEmitter = this.add.particles(
-      this.cameras.main.width * x,
-      this.cameras.main.height * y,
-      'smoke',
-      {
-        speed: { min: 20, max: 50 },
-        angle: { min: 230, max: 310 },
-        scale: { start: 0.1, end: 0 },
-        alpha: { start: 0.5, end: 0 },
-        lifespan: 2000,
-        frequency: 200,
-        blendMode: Phaser.BlendModes.ADD
-      }
-    );
   }
 
   private createAmbientLighting() {
