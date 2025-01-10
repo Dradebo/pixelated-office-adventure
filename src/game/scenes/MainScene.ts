@@ -13,17 +13,17 @@ export default class MainScene extends Phaser.Scene {
 
     // Create interactive elements with specific positions
     const elements = [
-      { key: 'character', x: 0.5, y: 0.5, tooltip: 'Contact Information', link: '/contact' },
-      { key: 'shelf', x: 0.8, y: 0.3, tooltip: 'Merchandise', link: '/merchandise' },
-      { key: 'noticeboard', x: 0.2, y: 0.3, tooltip: 'Press & Media', link: '/press' },
-      { key: 'radio', x: 0.7, y: 0.7, tooltip: 'Art Portfolio', link: '/art' },
-      { key: 'brain', x: 0.3, y: 0.7, tooltip: 'Biography', link: '/bio' }
+      { key: 'character', x: 0.5, y: 0.5, tooltip: 'Contact Information', link: '/contact', scale: 0.8 },
+      { key: 'shelf', x: 0.4, y: 0.35, tooltip: 'Merchandise', link: '/merchandise', scale: 0.8 },
+      { key: 'noticeboard', x: 0.25, y: 0.35, tooltip: 'Press & Media', link: '/press', scale: 0.8 },
+      { key: 'radio', x: 0.68, y: 0.5, tooltip: 'Art Portfolio', link: '/art', scale: 0.8 },
+      { key: 'brain', x: 0.6, y: 0.5, tooltip: 'Biography', link: '/bio', scale: 0.8 }
     ];
 
-    elements.forEach(({ key, x, y, tooltip, link }) => {
+    elements.forEach(({ key, x, y, tooltip, link, scale }) => {
       this.createInteractiveElement(key, x, y, tooltip, () => {
         window.open(link, '_blank');
-      });
+      }, scale);
     });
   }
 
@@ -32,7 +32,8 @@ export default class MainScene extends Phaser.Scene {
     x: number,
     y: number,
     tooltip: string,
-    callback: () => void
+    callback: () => void,
+    customScale: number
   ) {
     const element = this.add.image(
       this.cameras.main.width * x,
@@ -44,18 +45,18 @@ export default class MainScene extends Phaser.Scene {
     element.setInteractive({ useHandCursor: true });
     
     // Scale the element appropriately
-    const scale = Math.min(
+    const baseScale = Math.min(
       this.cameras.main.width / 1920,
       this.cameras.main.height / 1080
-    ) * 0.5; // Adjust this multiplier as needed
-    element.setScale(scale);
+    ) * customScale;
+    element.setScale(baseScale);
     
     // Add hover effects
     element.on('pointerover', () => {
       this.tweens.add({
         targets: element,
-        scaleX: scale * 1.1,
-        scaleY: scale * 1.1,
+        scaleX: baseScale * 1.1,
+        scaleY: baseScale * 1.1,
         duration: 200,
         ease: 'Power2'
       });
@@ -78,8 +79,8 @@ export default class MainScene extends Phaser.Scene {
     element.on('pointerout', () => {
       this.tweens.add({
         targets: element,
-        scaleX: scale,
-        scaleY: scale,
+        scaleX: baseScale,
+        scaleY: baseScale,
         duration: 200,
         ease: 'Power2'
       });
