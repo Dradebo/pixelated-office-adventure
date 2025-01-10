@@ -11,6 +11,15 @@ export default class MainScene extends Phaser.Scene {
     bg.setOrigin(0, 0);
     bg.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
 
+    // Add smoke effect
+    const smoke = this.add.image(
+      this.cameras.main.width * 0.5,
+      this.cameras.main.height * 0.5,
+      'smoke'
+    );
+    smoke.setAlpha(0.3);
+    smoke.setScale(2);
+
     // Create interactive elements with specific positions
     const elements = [
       { key: 'character', x: 0.5, y: 0.5, tooltip: 'Contact Information', link: '/contact', scale: 0.8 },
